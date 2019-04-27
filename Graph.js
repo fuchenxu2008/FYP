@@ -2,11 +2,10 @@ class Graph {
     constructor() {
         this.adjacencyList = new Map(); // EDGEID => [EDGEID] next roads
         this.roadMap = new Map(); // EDGEID => Road
-        this.nodeMap = new Map(); // STARTID => EDGEID
+        this.nodeMap = new Map(); // STARTID => [EDGEID]
     }
 
     addRoad(newRoad) {
-        // const roads = this.adjacencyList.keys();
         this.roadMap.set(newRoad.EDGEID, newRoad);
         this.nodeMap.set(newRoad.STARTID, [
             ...(this.nodeMap.get(newRoad.STARTID) || []),
@@ -16,10 +15,10 @@ class Graph {
 
     linkRoads() {
         const roads = Array.from(this.roadMap.keys());
-        roads.forEach((road) => {
+        roads.forEach((road) => { // EDGEID
             const thisRoad = this.roadMap.get(road);
             const jointRoads = this.nodeMap.get(thisRoad.ENDID) || [];
-            this.adjacencyList.set(road, jointRoads);
+            this.adjacencyList.set(road, jointRoads.filter(jr => Math.abs(jr) !== Math.abs(road)));
         });
     }
 
@@ -27,6 +26,10 @@ class Graph {
         const roads = Array.from(this.roadMap.keys());
         const randomId = roads[Math.floor(Math.random() * 1000)];
         return this.roadMap.get(randomId);
+    }
+
+    getRoad(EDGEID) {
+        return this.roadMap.get(EDGEID);
     }
 
     getAdjacentRoads(road) {
