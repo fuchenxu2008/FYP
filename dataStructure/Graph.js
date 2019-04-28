@@ -1,25 +1,29 @@
 class Graph {
     constructor() {
-        this.adjacencyList = new Map(); // EDGEID => [EDGEID] next roads
         this.roadMap = new Map(); // EDGEID => Road
-        this.nodeMap = new Map(); // STARTID => [EDGEID]
+        this.nodeMap = new Map(); // NODEID => Node
+        this.neighborMap = new Map(); // NODEID => [EDGEID]
+    }
+
+    calDistance([x1, y1], [x2, y2]) {
+        return Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+    }
+
+    addNode(newNode) {
+        this.nodeMap.set(newNode.NODEID, newNode);
     }
 
     addRoad(newRoad) {
         this.roadMap.set(newRoad.EDGEID, newRoad);
-        this.nodeMap.set(newRoad.STARTID, [
-            ...(this.nodeMap.get(newRoad.STARTID) || []),
-            newRoad.EDGEID
-        ]);
+        this.linkRoads(newRoad);
     }
 
-    linkRoads() {
-        const roads = Array.from(this.roadMap.keys());
-        roads.forEach((road) => { // EDGEID
-            const thisRoad = this.roadMap.get(road);
-            const jointRoads = this.nodeMap.get(thisRoad.ENDID) || [];
-            this.adjacencyList.set(road, jointRoads.filter(jr => Math.abs(jr) !== Math.abs(road)));
-        });
+    linkRoads(road) {
+        this.neighborMap.set(road.STARTID, (this.neighborMap.get(road.STARTID) || [])
+            .map(id => Math.abs(id)).includes(Math.abs(road.EDGEID)) // prevent self link
+            ? this.neighborMap.get(road.STARTID)
+            : (this.neighborMap.get(road.STARTID) || []).concat(road.EDGEID)
+        );
     }
 
     getOneRoad() {
@@ -28,24 +32,22 @@ class Graph {
         return this.roadMap.get(randomId);
     }
 
+    getOneNode() {
+        const nodes = Array.from(this.nodeMap.keys());
+        const randomId = nodes[Math.floor(Math.random() * 1000)];
+        return this.nodeMap.get(randomId);
+    }
+
     getRoad(EDGEID) {
         return this.roadMap.get(EDGEID);
     }
 
-    getAdjacentRoads(road) {
-        return this.adjacencyList.get(road.EDGEID);
+    getNode(NODEID) {
+        return this.nodeMap.get(NODEID);
     }
 
-    printGraph() {
-        const roads = Array.from(this.roadMap.keys());
-        const printed = roads.map((EDGEID) => {
-            const road = this.roadMap.get(EDGEID);
-            const jointRoads = this.adjacencyList.get(EDGEID).map(roadId => this.roadMap.get(roadId))
-            return {
-                road,
-                jointRoads,
-            }
-        })
+    getNeighborRoads(NODEID) {
+        return (this.neighborMap.get(NODEID) || []).map(EDGEID => this.getRoad(EDGEID));
     }
 }
 
