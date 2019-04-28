@@ -17,23 +17,14 @@ const storeRoad = async () => {
 
 async function main() {
     const graph = await storeRoad();
-    const road = graph.getRoad('-958340131');
-    // console.log('road: ', road);
-    // const next1 = graph.nodeMap.get(road.ENDID);
-    // const next2 = graph.adjacencyList.get(road.EDGEID)
-    // console.log('next1: ', next1);
-    // console.log('next2: ', next2);
-    // const r2 = graph.getRoad('958340131');
-    // console.log('r2: ', r2);
     // const randomRoad1 = graph.getOneRoad();
-    const randomRoad2 = graph.getOneRoad();
-    console.log('source', graph.getRoad('958340131'));
-    console.log('dest: ', randomRoad2);
-    // console.log(randomRoad1.EDGEID);
-    // console.log(randomRoad2.EDGEID);
+    // const randomRoad2 = graph.getOneRoad();
+    // console.log('source', randomRoad1);
+    // console.log('dest: ', randomRoad2);
     // new DijkastraShortestPath(graph).run(randomRoad1.EDGEID, randomRoad2.EDGEID);
     // new DijkastraShortestPath(graph).run('-955330839', randomRoad2.EDGEID);
-    new DijkastraShortestPath(graph).run('958340131', randomRoad2.EDGEID);
+    // new DijkastraShortestPath(graph).run('958340131', '-955015939');
+    new DijkastraShortestPath(graph).run('-960871510', '-957465325');
     const then = Date.now();
 }
 

@@ -13,43 +13,47 @@ class DijkstraShortestPath {
     }
 
     run(source, dest) { // EDGEID
-        this.distMap.set(source, 0);
-        this.activeRoads.set(source, 1);
-        // let n = 0;
-        let lastRoad = null;
+        this.distMap.set(source, 0); // Initialize distance with 0
+        this.activeRoads.set(source, 1); // Set as active
         // To use
-        while (this.activeRoads.size) { // obj
-            const u = this.graph.roadMap.get(
+        while (this.activeRoads.size) {
+            const u = this.graph.getRoad(
                 Array.from(this.activeRoads.keys())
                     .reduce((a, b) => this.getDist(a) < this.getDist(b) ? a : b)
-            ); // obj
-            this.walkedRoads.set(u.EDGEID, 1);
-            if (u.EDGEID === dest) {
-                console.log('Reached dest');
-                break;
-            }
+            );
             // Remove u from Q
+            this.walkedRoads.set(u.EDGEID, 1);
             this.activeRoads.delete(u.EDGEID);
-            // console.log('n: ', ++n);
+            // Detect destination
+            if (u.EDGEID === dest) {
+                console.log('Reached destination!');
+                return this.traceRoute(source, dest);
+            }
+            // Examine neighbors
             const neighbors = this.graph.adjacencyList.get(u.EDGEID);
-            // Updating distance
             neighbors.forEach(neighbor => { // EDGEID
-                const v = this.graph.roadMap.get(neighbor); // obj
+                const v = this.graph.getRoad(neighbor); // obj
                 const alt = this.getDist(u.EDGEID) + v.COST;
                 if (alt < this.getDist(v.EDGEID)) {
-                    this.distMap.set(v.EDGEID, alt);
+                    this.distMap.set(v.EDGEID, alt); // Update distance
                     this.prevMap.set(v.EDGEID, u.EDGEID);
-                    lastRoad = v;
                 }
-                if (!this.walkedRoads.get(v.EDGEID))
+                if (!this.walkedRoads.get(v.EDGEID)) { // Preveent duplicate set active
                     this.activeRoads.set(v.EDGEID, 1);
+                }
             });
         };
-        // console.log(lastRoad);
-        // console.log(this.prevMap);
-        
-        // console.log(this.distMap);
-        // console.log(this.prevMap);
+    }
+
+    traceRoute(source, dest) {
+        console.log(`Examined ${this.walkedRoads.size} roads`);
+        const tracert = [dest];
+        let current = dest;
+        while (current !== source) {
+            current = this.prevMap.get(current)
+            tracert.unshift(current)
+        }
+        console.log('tracert: ', tracert);
     }
 }
 
