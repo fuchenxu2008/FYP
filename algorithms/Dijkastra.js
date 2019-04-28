@@ -53,7 +53,7 @@ class DijkstraShortestPath {
             current = this.prevMap.get(current)
             tracert.unshift(current)
         }
-        console.log('tracert: ', tracert);
+        console.log('tracert: ', tracert.join(' -> '));
     }
 }
 

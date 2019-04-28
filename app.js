@@ -1,6 +1,6 @@
 const { readJSON } = require('./utils/file');
-const Road = require('./Road');
-const Graph = require('./Graph');
+const Road = require('./dataStructure/Road');
+const Graph = require('./dataStructure/Graph');
 const DijkastraShortestPath = require('./algorithms/Dijkastra');
 
 const storeRoad = async () => {
