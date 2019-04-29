@@ -26,26 +26,31 @@ class DijkstraShortestPath {
                 Array.from(this.activeNodes.keys())
                     .reduce((a, b) => this.getDist(a) < this.getDist(b) ? a : b)
             );
-            // Remove u from Q
-            this.walkedNodes.set(u.NODEID, 1);
-            this.activeNodes.delete(u.NODEID);
             // Detect destination
             if (u.NODEID === dest) {
                 console.log('√ Reached destination!');
                 return this.traceRoute(source, dest);
             }
+            // Marked as walked
+            this.walkedNodes.set(u.NODEID, 1);
+            this.activeNodes.delete(u.NODEID);
             // Examine neighbors
             const neighborRoads = this.graph.getNeighborRoads(u.NODEID);
             neighborRoads.forEach(neighborRoad => { // Road obj
                 const v = this.graph.getNode(neighborRoad.ENDID); // Node obj
-                const alt = this.getDist(u.NODEID) + this.getLength(u.NODEID, v.NODEID);
-                if (alt < this.getDist(v.NODEID)) {
-                    this.distMap.set(v.NODEID, alt); // Update distance
-                    this.prevMap.set(v.NODEID, u.NODEID);
-                }
-                if (!this.walkedNodes.get(v.NODEID)) { // Prevent duplicate set active
+                 // Prevent duplicate set active
+                if (this.walkedNodes.get(v.NODEID)) return;
+                // Calculate new distance
+                const alt = this.getDist(u.NODEID) + this.getLength(u.NODEID, v.NODEID);  
+                // If this node hasn't been evaluated before => update distance  
+                // else only update if has a smaller distance   
+                if (!this.activeNodes.get(v.NODEID)) {
                     this.activeNodes.set(v.NODEID, 1);
+                } else if (alt >= this.getDist(v.NODEID)) {
+                    return;
                 }
+                this.distMap.set(v.NODEID, alt); // Update distance
+                this.prevMap.set(v.NODEID, u.NODEID);
             });
         };
         console.log('✘ Could not find path...');
@@ -59,7 +64,8 @@ class DijkstraShortestPath {
             current = this.prevMap.get(current)
             tracert.unshift(current)
         }
-        console.log('Tracert: ', tracert.join(' -> '));
+        // console.log('Tracert: ', tracert.join(' -> '));
+        console.log('Route length: ', tracert.length);
     }
 }
 

@@ -1,16 +1,92 @@
-class AStar {
+class AStarShortestPath {
     constructor(graph) {
         this.graph = graph;
+        this.activeNodes = new Map(); // NODEID => 1
+        this.walkedNodes = new Map(); // NODEID => 1
+        this.gScoreMap = new Map(); // NODEID => gScore
+        this.fScoreMap = new Map(); // NODEID => fScore = gScore + heuristic
+        this.prevMap = new Map(); // NODEID => NODEID
     }
 
-    calDistance(start, goal) {
-        this.graph.getRoad(start);
-        this.graph.getRoad(start);
+    gScore(NODEID) {
+        const cost = this.gScoreMap.get(NODEID);
+        return cost !== undefined ? cost : Number.POSITIVE_INFINITY;
     }
 
-    run() {
+    fScore(NODEID) {
+        const cost = this.fScoreMap.get(NODEID);
+        return cost !== undefined ? cost : Number.POSITIVE_INFINITY;
+    }
 
+    getLength(startID, endID) {
+        const neighborRoad = this.graph.getNeighborRoads(startID).find(nr => nr.ENDID === endID) || {};
+        return neighborRoad.COST || Number.POSITIVE_INFINITY;
+    }
+
+    calDistance([x1, y1], [x2, y2]) {
+        return Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+    }
+
+    heuristicCost(start, goal) {
+        const startNode = this.graph.getNode(start);
+        const goalNode = this.graph.getNode(goal);
+        return this.calDistance(
+            [startNode.x, startNode.y],
+            [goalNode.x, goalNode.y]
+        );
+    }
+
+    run(source, dest) { // NODEID
+        this.gScoreMap.set(source, 0); // Initialize gScore with 0
+        this.fScoreMap.set(source, 0 + this.heuristicCost(source, dest)); // Initialize fScore with 0 + heuristic cost
+        this.activeNodes.set(source, 1); // Set as active
+        // To use
+        while (this.activeNodes.size) {
+            const u = this.graph.getNode(
+                Array.from(this.activeNodes.keys())
+                    .reduce((a, b) => this.fScoreMap.get(a) < this.fScoreMap.get(b) ? a : b)
+            );
+            // Detect destination
+            if (u.NODEID === dest) {
+                console.log('√ Reached destination!');
+                return this.traceRoute(source, dest);
+            }
+            // Marked as walked
+            this.walkedNodes.set(u.NODEID, 1);
+            this.activeNodes.delete(u.NODEID);
+            // Examine neighbors
+            const neighborRoads = this.graph.getNeighborRoads(u.NODEID);
+            neighborRoads.forEach(neighborRoad => { // Road obj
+                const v = this.graph.getNode(neighborRoad.ENDID); // Node obj
+                if (this.walkedNodes.get(v.NODEID)) return; // Prevent duplicate set active
+                // Calculate new distance
+                const alt = this.gScore(u.NODEID) + this.getLength(u.NODEID, v.NODEID);
+                // If this node hasn't been evaluated before => update distance  
+                // else only update if has a smaller distance
+                if (!this.activeNodes.get(v.NODEID)) {
+                    this.activeNodes.set(v.NODEID, 1);
+                } else if (alt >= this.gScore(v.NODEID)) {
+                    return;
+                }
+                this.gScoreMap.set(v.NODEID, alt); // Update distance
+                this.fScoreMap.set(v.NODEID, alt + this.heuristicCost(v.NODEID, dest)); // Update distance
+                this.prevMap.set(v.NODEID, u.NODEID);
+            });
+        };
+        console.log('✘ Could not find path...');
+    }
+
+    traceRoute(source, dest) {
+        console.log(`Examined ${this.walkedNodes.size} nodes`);
+        const tracert = [dest];
+        let current = dest;
+        while (current !== source) {
+            current = this.prevMap.get(current)
+            tracert.unshift(current)
+        }
+        // console.log('Tracert: ', tracert.join(' -> '));
+        console.log('Route length: ', tracert.length);
     }
 }
 
-module.exports = AStar;
+module.exports = AStarShortestPath;
