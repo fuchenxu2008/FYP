@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "serve": "nodemon server.js --max-old-space-size=4096",
     "start": "node app.js --max-old-space-size=4096",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,10 +12,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
     "event-stream": "^4.0.1",
-    "jsgraph": "^0.7.1",
+    "express": "^4.16.4",
     "ogr2ogr": "^1.4.0",
-    "socket.io": "^2.2.0",
-    "socket.io-client": "^2.2.0"
+    "socket.io": "^2.2.0"
   }
 }

@@ -1,8 +1,15 @@
+const { pointInPolygon } = require('../utils/polygon');
+
 class Graph {
     constructor() {
         this.roadMap = new Map(); // EDGEID => Road
         this.nodeMap = new Map(); // NODEID => Node
+        this.obstacleMap = new Map(); // POLYID => Polygon
         this.neighborMap = new Map(); // NODEID => [EDGEID]
+    }
+
+    addObstacle(newPolygon) {
+        this.obstacleMap.set(newPolygon.POLYID, newPolygon);
     }
 
     addNode(newNode) {
@@ -44,6 +51,10 @@ class Graph {
 
     getNeighborRoads(NODEID) {
         return (this.neighborMap.get(NODEID) || []).map(EDGEID => this.getRoad(EDGEID));
+    }
+
+    isBlocked(NODEID) {
+        return Array.from(this.obstacleMap.values()).some(obstacle => pointInPolygon(this.getNode(NODEID), obstacle));
     }
 }
 

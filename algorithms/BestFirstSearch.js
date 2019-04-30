@@ -1,30 +1,38 @@
-class DijkstraShortestPath {
+class BestFirstSearchShortestPath {
     constructor(graph) {
         this.graph = graph;
         this.activeNodes = new Map(); // NODEID => 1
         this.walkedNodes = new Map(); // NODEID => 1
-        this.distMap = new Map(); // NODEID => distance
+        this.hScoreMap = new Map(); // NODEID => fScore = gScore + heuristic
         this.prevMap = new Map(); // NODEID => NODEID
     }
 
-    getDist(NODEID) {
-        const cost = this.distMap.get(NODEID);
+    hScore(NODEID) {
+        const cost = this.hScoreMap.get(NODEID);
         return cost !== undefined ? cost : Number.POSITIVE_INFINITY;
     }
 
-    getLength(startID, endID) {
-        const neighborRoad = this.graph.getNeighborRoads(startID).find(nr => nr.ENDID === endID) || {};
-        return neighborRoad.COST || Number.POSITIVE_INFINITY;
+    calDistance([x1, y1], [x2, y2]) {
+        return Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+    }
+
+    heuristicCost(start, goal) {
+        const startNode = this.graph.getNode(start);
+        const goalNode = this.graph.getNode(goal);
+        return this.calDistance(
+            [startNode.x, startNode.y],
+            [goalNode.x, goalNode.y]
+        );
     }
 
     run(source, dest) { // NODEID
-        this.distMap.set(source, 0); // Initialize distance with 0
+        this.hScoreMap.set(source, this.heuristicCost(source, dest)); // Initialize hScore with heuristic cost
         this.activeNodes.set(source, 1); // Set as active
         // To use
         while (this.activeNodes.size) {
             const u = this.graph.getNode(
                 Array.from(this.activeNodes.keys())
-                    .reduce((a, b) => this.getDist(a) < this.getDist(b) ? a : b)
+                    .reduce((a, b) => this.hScoreMap.get(a) < this.hScoreMap.get(b) ? a : b)
             );
             // Detect destination
             if (u.NODEID === dest) {
@@ -38,18 +46,20 @@ class DijkstraShortestPath {
             const neighborRoads = this.graph.getNeighborRoads(u.NODEID);
             neighborRoads.forEach(neighborRoad => { // Road obj
                 const v = this.graph.getNode(neighborRoad.ENDID); // Node obj
-                 // Prevent duplicate set active
-                if (this.walkedNodes.get(v.NODEID)) return;
-                // Calculate new distance
-                const alt = this.getDist(u.NODEID) + this.getLength(u.NODEID, v.NODEID);  
-                // If this node hasn't been evaluated before => update distance  
-                // else only update if has a smaller distance   
-                if (!this.activeNodes.get(v.NODEID)) {
-                    this.activeNodes.set(v.NODEID, 1);
-                } else if (alt >= this.getDist(v.NODEID)) {
+                // Prevent duplicate set active
+                if (this.walkedNodes.get(v.NODEID) || this.graph.isBlocked(v.NODEID)) {
                     return;
                 }
-                this.distMap.set(v.NODEID, alt); // Update distance
+                // Calculate new distance
+                const alt = this.heuristicCost(v.NODEID, dest);
+                // If this node hasn't been evaluated before => update distance  
+                // else only update if has a smaller distance
+                if (!this.activeNodes.get(v.NODEID)) {
+                    this.activeNodes.set(v.NODEID, 1);
+                } else if (alt >= this.hScore(u.NODEID)) {
+                    return;
+                }
+                this.hScoreMap.set(v.NODEID, alt); // Update distance
                 this.prevMap.set(v.NODEID, u.NODEID);
             });
         };
@@ -66,7 +76,8 @@ class DijkstraShortestPath {
         }
         // console.log('Tracert: ', tracert.join(' -> '));
         console.log('Route length: ', tracert.length);
+        return tracert.length;
     }
 }
 
-module.exports = DijkstraShortestPath;
+module.exports = BestFirstSearchShortestPath;

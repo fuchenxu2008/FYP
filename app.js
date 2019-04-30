@@ -1,9 +1,14 @@
 const { readJSON } = require('./utils/file');
 const Road = require('./dataStructure/Road');
 const Node = require('./dataStructure/Node');
+const Polygon = require('./dataStructure/Polygon');
 const Graph = require('./dataStructure/Graph');
-const DijkastraShortestPath = require('./algorithms/Dijkastra');
-const AStarShortestPath = require('./algorithms/AStar');
+const Dijkstra = require('./algorithms/Dijkstra');
+const AStar = require('./algorithms/AStar');
+const BestFirstSearch = require('./algorithms/BestFirstSearch');
+const BellmanFord = require('./algorithms/BellmanFord');
+
+let graph;
 
 const storeRoad = async (graph) => {
     const { features: roads } = await readJSON('./resources/sfo_roads.json');
@@ -21,17 +26,42 @@ const storeNode = async (graph) => {
     });
 }
 
-async function main() {
-    const graph = new Graph();
-    await storeNode(graph);
-    await storeRoad(graph);
-    // const randomNode1 = graph.getOneNode();
-    // console.log('randomNode1: ', randomNode1);
-    // const randomNode2 = graph.getOneNode();
-    // console.log('randomNode2: ', randomNode2);
-    // new DijkastraShortestPath(graph).run(randomNode1.NODEID, randomNode2.NODEID);
-    // new DijkastraShortestPath(graph).run('48438271', '48432890');
-    new AStarShortestPath(graph).run('48438271', '48432890');
+const storePolygon = async (graph) => {
+    const { features: polygons } = await readJSON('./resources/sfo_poly.json');
+    polygons.forEach(({ properties = {}, geometry = {} }) => {
+        const newPolygon = new Polygon(properties, geometry);
+        graph.addObstacle(newPolygon);
+    });
 }
 
-main();
+(async function main() {
+    graph = new Graph();
+    await Promise.all([
+        storeNode(graph),
+        storeRoad(graph),
+        storePolygon(graph),
+    ]);
+    console.log('√ Data structure established');
+})();
+
+// const randomNode1 = graph.getOneNode();
+// console.log('randomNode1: ', randomNode1);
+// const randomNode2 = graph.getOneNode();
+// console.log('randomNode2: ', randomNode2);
+// new Dijkstra(graph).run(randomNode1.NODEID, randomNode2.NODEID);
+// new Dijkstra(graph).run('48438271', '48432890');
+// new AStar(graph).run('48438271', '48432890');
+// new BestFirstSearch(graph).run('48438271', '48432890');
+// new BellmanFord(graph).run('48438271', '48432890');
+
+exports.runDijkstra = () => {
+    return new Dijkstra(graph).run('48438271', '48432890');
+}
+
+exports.runAStar = () => {
+    return new AStar(graph).run('48438271', '48432890');
+}
+
+exports.runBestFirstSearch = () => {
+    return new BestFirstSearch(graph).run('48438271', '48432890');
+}
