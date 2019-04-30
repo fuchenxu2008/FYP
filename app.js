@@ -13,7 +13,7 @@ let graph;
 const storeRoad = async (graph) => {
     const { features: roads } = await readJSON('./resources/sfo_roads.json');
     roads.forEach(({ properties = {}, geometry = {} }) => {
-        const newRoad = new Road(properties);
+        const newRoad = new Road(properties, geometry);
         graph.addRoad(newRoad);
     });
 }
@@ -43,16 +43,6 @@ const storePolygon = async (graph) => {
     ]);
     console.log('√ Data structure established');
 })();
-
-// const randomNode1 = graph.getOneNode();
-// console.log('randomNode1: ', randomNode1);
-// const randomNode2 = graph.getOneNode();
-// console.log('randomNode2: ', randomNode2);
-// new Dijkstra(graph).run(randomNode1.NODEID, randomNode2.NODEID);
-// new Dijkstra(graph).run('48438271', '48432890');
-// new AStar(graph).run('48438271', '48432890');
-// new BestFirstSearch(graph).run('48438271', '48432890');
-// new BellmanFord(graph).run('48438271', '48432890');
 
 exports.runDijkstra = () => {
     return new Dijkstra(graph).run('48438271', '48432890');

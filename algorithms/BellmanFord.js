@@ -4,7 +4,8 @@ class BellmanFordShortestPath {
         this.activeNodes = new Map(); // NODEID => 1
         this.walkedNodes = new Map(); // NODEID => 1
         this.distMap = new Map(); // NODEID => distance
-        this.prevMap = new Map(); // NODEID => NODEID
+        this.prevNodeMap = new Map(); // NODEID => NODEID
+        this.prevRoadMap = new Map(); // NODEID => EDGEID
     }
 
     getDist(NODEID) {
@@ -23,7 +24,9 @@ class BellmanFordShortestPath {
                 const alt = this.getDist(u) + road.COST;
                 if (this.getDist(u) !== Infinity && alt < this.getDist(v)) {
                     this.distMap.set(v, alt);
-                    this.prevMap.set(v, u);
+                    this.prevNodeMap.set(v, u);
+                    // Used to render road
+                    this.prevRoadMap.set(v.NODEID, neighborRoad);
                 }
             })
         }
@@ -38,7 +41,7 @@ class BellmanFordShortestPath {
         })
 
         // Detect destination
-        if (this.prevMap.get(dest)) {
+        if (this.prevNodeMap.get(dest)) {
             console.log('√ Reached destination!');
             return this.traceRoute(source, dest);
         }
@@ -48,14 +51,16 @@ class BellmanFordShortestPath {
 
     traceRoute(source, dest) {
         console.log(`Examined ${this.walkedNodes.size} nodes`);
-        const tracert = [dest];
+        const tracert = [this.prevRoadMap.get(dest).vertices];
         let current = dest;
-        while (current !== source) {
-            current = this.prevMap.get(current)
-            tracert.unshift(current)
+        while (true) {
+            current = this.prevNodeMap.get(current)
+            const { vertices } = this.prevRoadMap.get(current) || {};
+            if (!vertices) break;
+            tracert.unshift(vertices);
         }
-        // console.log('Tracert: ', tracert.join(' -> '));
         console.log('Route length: ', tracert.length);
+        return [].concat.apply([], tracert);
     }
 }
 

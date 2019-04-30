@@ -1,6 +1,7 @@
 const ogr2ogr = require('ogr2ogr');
 const path = require('path');
 const { saveJSON } = require('./utils/file');
+const { convertNode, convertRoad, convertPolygon } = require('./utils/geometry');
 
 const convertShapeToGeoJSON = (filePath) => new Promise((resolve, reject) => {
     try {
@@ -16,13 +17,13 @@ const convertShapeToGeoJSON = (filePath) => new Promise((resolve, reject) => {
 })
 
 const processRoads = () => convertShapeToGeoJSON('./resources/sfo_roads.shp.zip')
-    .then(roads => saveJSON('./resources/sfo_roads.json', roads));
+    .then(roads => saveJSON('./resources/sfo_roads.json', convertRoad(roads)));
 
 const processNodes = () => convertShapeToGeoJSON('./resources/sfo_nodes.shp.zip')
-    .then(nodes => saveJSON('./resources/sfo_nodes.json', nodes));
+    .then(nodes => saveJSON('./resources/sfo_nodes.json', convertNode(nodes)));
 
 const processPoly = () => convertShapeToGeoJSON('./resources/sfo_poly.shp.zip')
-    .then(poly => saveJSON('./resources/sfo_poly.json', poly));
+    .then(poly => saveJSON('./resources/sfo_poly.json', convertPolygon(poly)));
 
 const preprocess = async () => {
     await Promise.all([

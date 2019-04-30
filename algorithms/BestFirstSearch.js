@@ -4,7 +4,8 @@ class BestFirstSearchShortestPath {
         this.activeNodes = new Map(); // NODEID => 1
         this.walkedNodes = new Map(); // NODEID => 1
         this.hScoreMap = new Map(); // NODEID => fScore = gScore + heuristic
-        this.prevMap = new Map(); // NODEID => NODEID
+        this.prevNodeMap = new Map(); // NODEID => NODEID
+        this.prevRoadMap = new Map(); // NODEID => EDGEID
     }
 
     hScore(NODEID) {
@@ -60,7 +61,9 @@ class BestFirstSearchShortestPath {
                     return;
                 }
                 this.hScoreMap.set(v.NODEID, alt); // Update distance
-                this.prevMap.set(v.NODEID, u.NODEID);
+                this.prevNodeMap.set(v.NODEID, u.NODEID);
+                // Used to render road
+                this.prevRoadMap.set(v.NODEID, neighborRoad);
             });
         };
         console.log('✘ Could not find path...');
@@ -68,15 +71,15 @@ class BestFirstSearchShortestPath {
 
     traceRoute(source, dest) {
         console.log(`Examined ${this.walkedNodes.size} nodes`);
-        const tracert = [dest];
+        const tracert = [this.prevRoadMap.get(dest).vertices];
         let current = dest;
-        while (current !== source) {
-            current = this.prevMap.get(current)
-            tracert.unshift(current)
+        while (true) {
+            current = this.prevNodeMap.get(current)
+            const { vertices } = this.prevRoadMap.get(current) || {};
+            if (!vertices) break;
+            tracert.unshift(vertices);
         }
-        // console.log('Tracert: ', tracert.join(' -> '));
-        console.log('Route length: ', tracert.length);
-        return tracert.length;
+        return [].concat.apply([], tracert);
     }
 }
 
