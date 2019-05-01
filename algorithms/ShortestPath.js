@@ -1,8 +1,9 @@
 class ShortestPath {
     traceRoute() {
         console.log(`Examined ${this.walkedNodes.size} nodes`);
+        if (!this.prevRoadMap.get(this.dest)) return [];
+
         const tracert = [this.prevRoadMap.get(this.dest).vertices];
-        
         let current = this.dest;
         while (true) {
             current = this.prevNodeMap.get(current);
