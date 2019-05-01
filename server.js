@@ -5,6 +5,7 @@ const socketIO = require('socket.io');
 const Benchmark = require('benchmark');
 const { port } = require('./config');
 const algorithmController = require('./app');
+const { readJSON } = require('./utils/file');
 
 const app = express();
 const server = http.createServer(app);
@@ -12,12 +13,14 @@ const io = socketIO(server);
 
 app.use(cors());
 
-io.on('connection', socket => {
+io.on('connection', async (socket) => {
   try {
     // Remove previous listeners to prevent duplicate
     socket.removeAllListeners();
     // Handle connection
     console.log('New connection');
+    // socket.emit('roadLoad', await readJSON('./resources/sfo_roads.json'));
+    // socket.emit('obstacleLoad', await readJSON('./resources/sfo_poly.json'));
     // Handle disconnect
     socket.on('disconnect', () => console.log('Disconnected'));
     // Handle shortest path command
@@ -28,13 +31,13 @@ io.on('connection', socket => {
 });
 
 const socketHandler = socket => {
-  socket.on('runAStar', () => {
+  socket.on('runAStar', ({ source, dest }) => {
     console.log('Running A Star');
     let sent = false;
     const suite = new Benchmark.Suite();
     suite
       .add('AStar', () => {
-        const result = algorithmController.runAStar();
+        const result = algorithmController.runAStar(source, dest);
         if (!sent) {
           socket.emit('AStarResult', result);
           sent = true;
@@ -47,13 +50,13 @@ const socketHandler = socket => {
       .run({ async: true });
   });
 
-  socket.on('runDijkstra', () => {
+  socket.on('runDijkstra', ({ source, dest }) => {
     console.log('Running Dijkstra');
     let sent = false;
     const suite = new Benchmark.Suite();
     suite
       .add('Dijkstra', () => {
-        const result = algorithmController.runDijkstra();
+        const result = algorithmController.runDijkstra(source, dest);
         if (!sent) {
           socket.emit('DijkstraResult', result);
           sent = true;
@@ -66,13 +69,13 @@ const socketHandler = socket => {
       .run({ async: true });
   });
 
-  socket.on('runBestFS', () => {
+  socket.on('runBestFS', ({ source, dest }) => {
     console.log('Running Best First Search');
     let sent = false;
     const suite = new Benchmark.Suite();
     suite
       .add('BestFS', () => {
-        const result = algorithmController.runBestFirstSearch();
+        const result = algorithmController.runBestFirstSearch(source, dest);
         if (!sent) {
           socket.emit('BestFSResult', result);
           sent = true;

@@ -59,6 +59,7 @@ class DijkstraShortestPath {
             });
         };
         console.log('✘ Could not find path...');
+        return [];
     }
 
     traceRoute(source, dest) {

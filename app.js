@@ -1,4 +1,3 @@
-const { readJSON } = require('./utils/file');
 const Road = require('./dataStructure/Road');
 const Node = require('./dataStructure/Node');
 const Polygon = require('./dataStructure/Polygon');
@@ -7,6 +6,8 @@ const Dijkstra = require('./algorithms/Dijkstra');
 const AStar = require('./algorithms/AStar');
 const BestFirstSearch = require('./algorithms/BestFirstSearch');
 const BellmanFord = require('./algorithms/BellmanFord');
+const { readJSON } = require('./utils/file');
+const { getNearestNode } = require('./utils/geometry');
 
 let graph;
 
@@ -44,14 +45,23 @@ const storePolygon = async (graph) => {
     console.log('√ Data structure established');
 })();
 
-exports.runDijkstra = () => {
-    return new Dijkstra(graph).run('48438271', '48432890');
+exports.runDijkstra = (source, dest) => {
+    return new Dijkstra(graph).run(
+        getNearestNode(source, graph.nodeMap) || '48438271',
+        getNearestNode(dest, graph.nodeMap) || '48432890'
+    );
 }
 
-exports.runAStar = () => {
-    return new AStar(graph).run('48438271', '48432890');
+exports.runAStar = (source, dest) => {
+    return new AStar(graph).run(
+        getNearestNode(source, graph.nodeMap) || '48438271',
+        getNearestNode(dest, graph.nodeMap) || '48432890'
+    );
 }
 
-exports.runBestFirstSearch = () => {
-    return new BestFirstSearch(graph).run('48438271', '48432890');
+exports.runBestFirstSearch = (source, dest) => {
+    return new BestFirstSearch(graph).run(
+        getNearestNode(source, graph.nodeMap) || '48438271',
+        getNearestNode(dest, graph.nodeMap) || '48432890'
+    );
 }

@@ -1,3 +1,5 @@
+const { calDistance } = require('../utils/geometry');
+
 class AStarShortestPath {
     constructor(graph) {
         this.graph = graph;
@@ -24,14 +26,10 @@ class AStarShortestPath {
         return neighborRoad.COST || Number.POSITIVE_INFINITY;
     }
 
-    calDistance([x1, y1], [x2, y2]) {
-        return Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
-    }
-
     heuristicCost(start, goal) {
         const startNode = this.graph.getNode(start);
         const goalNode = this.graph.getNode(goal);
-        return this.calDistance(
+        return calDistance(
             [startNode.x, startNode.y],
             [goalNode.x, goalNode.y]
         );
@@ -80,6 +78,7 @@ class AStarShortestPath {
             });
         };
         console.log('✘ Could not find path...');
+        return [];
     }
 
     traceRoute(source, dest) {
