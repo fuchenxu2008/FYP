@@ -17,19 +17,25 @@ class ShortestPath {
 
     getTraversed() {
         // Return GeoJSON
-        const getPoint = (point) => ({
+        const getPointJSON = (point) => ({
             type: 'Feature',
             geometry: {
                 type: 'Point',
                 coordinates: point
             },
         })
+
+        const features = [];
+        for (let [NODEID,] of this.walkedNodes) {
+            features.push(
+                getPointJSON(this.graph.getNode(NODEID).vertex)
+            );
+        }
+
         return {
             type: 'FeatureCollection',
             name: 'traversed_points',
-            features: Array.from(this.walkedNodes.keys()).map(NODEID => (
-                getPoint(this.graph.getNode(NODEID).vertex))
-            )
+            features,
         }
     }
 }
