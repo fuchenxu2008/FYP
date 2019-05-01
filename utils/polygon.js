@@ -14,9 +14,9 @@ exports.pointInPolygon = (node, { vertices = [] }) => {
  * Ray down from (x, y) will cross the segment between (x1, y1) and (x2, y2) ?
  */
 exports.rayWillIntersect = (node, [x1, y1], [x2, y2]) => {
-    if (!((node.x > x1 && node.x < x2) || (node.x > x2 && node.x < x1)))
+    if (!((node.vertex[0] > x1 && node.vertex[0] < x2) || (node.vertex[0] > x2 && node.vertex[0] < x1)))
         return;
     const k = (y2 - y1) / (x2 - x1);
     const b = ((x2 - x1) * y2 - (y2 - y1) * x2) / (x2 - x1);
-    return k * node.x + b < node.y;
+    return k * node.vertex[0] + b < node.vertex[1];
 }

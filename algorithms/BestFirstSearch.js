@@ -19,8 +19,8 @@ class BestFirstSearchShortestPath {
         const startNode = this.graph.getNode(start);
         const goalNode = this.graph.getNode(goal);
         return calDistance(
-            [startNode.x, startNode.y],
-            [goalNode.x, goalNode.y]
+            [startNode.vertex[0], startNode.vertex[1]],
+            [goalNode.vertex[0], goalNode.vertex[1]]
         );
     }
 
