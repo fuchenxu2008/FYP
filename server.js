@@ -33,15 +33,14 @@ io.on('connection', async (socket) => {
 const socketHandler = socket => {
   socket.on('runAStar', ({ source, dest }) => {
     console.log('Running A Star');
-    let sent = false;
+    const sp = algorithmController.runAStar(source, dest);
+    socket.emit('AStarRoute', sp.traceRoute());
+    socket.emit('AStarTraversed', sp.getTraversed());
+    // Benchmark
     const suite = new Benchmark.Suite();
     suite
       .add('AStar', () => {
-        const result = algorithmController.runAStar(source, dest);
-        if (!sent) {
-          socket.emit('AStarResult', result);
-          sent = true;
-        }
+        algorithmController.runAStar(source, dest);
       })
       .on('cycle', event => {
         console.log(String(event.target));
@@ -52,15 +51,14 @@ const socketHandler = socket => {
 
   socket.on('runDijkstra', ({ source, dest }) => {
     console.log('Running Dijkstra');
-    let sent = false;
+    const sp = algorithmController.runDijkstra(source, dest);
+    socket.emit('DijkstraRoute', sp.traceRoute());
+    socket.emit('DijkstraTraversed', sp.getTraversed());
+    // Benchmark
     const suite = new Benchmark.Suite();
     suite
       .add('Dijkstra', () => {
-        const result = algorithmController.runDijkstra(source, dest);
-        if (!sent) {
-          socket.emit('DijkstraResult', result);
-          sent = true;
-        }
+        algorithmController.runDijkstra(source, dest);
       })
       .on('cycle', event => {
         console.log(String(event.target));
@@ -71,15 +69,13 @@ const socketHandler = socket => {
 
   socket.on('runBestFS', ({ source, dest }) => {
     console.log('Running Best First Search');
-    let sent = false;
+    const sp = algorithmController.runBestFirstSearch(source, dest);
+    socket.emit('BestFSRoute', sp.traceRoute());
+    socket.emit('BestFSTraversed', sp.getTraversed());
     const suite = new Benchmark.Suite();
     suite
       .add('BestFS', () => {
-        const result = algorithmController.runBestFirstSearch(source, dest);
-        if (!sent) {
-          socket.emit('BestFSResult', result);
-          sent = true;
-        }
+        algorithmController.runBestFirstSearch(source, dest);
       })
       .on('cycle', event => {
         console.log(String(event.target));

@@ -1,7 +1,9 @@
+const ShortestPath = require('./ShortestPath');
 const { calDistance } = require('../utils/geometry');
 
-class AStarShortestPath {
+class AStar extends ShortestPath {
     constructor(graph) {
+        super();        
         this.graph = graph;
         this.activeNodes = new Map(); // NODEID => 1
         this.walkedNodes = new Map(); // NODEID => 1
@@ -36,6 +38,8 @@ class AStarShortestPath {
     }
 
     run(source, dest) { // NODEID
+        this.source = source;
+        this.dest = dest;
         this.gScoreMap.set(source, 0); // Initialize gScore with 0
         this.fScoreMap.set(source, 0 + this.heuristicCost(source, dest)); // Initialize fScore with 0 + heuristic cost
         this.activeNodes.set(source, 1); // Set as active
@@ -47,8 +51,7 @@ class AStarShortestPath {
             );
             // Detect destination
             if (u.NODEID === dest) {
-                console.log('√ Reached destination!');
-                return this.traceRoute(source, dest);
+                return console.log('√ Reached destination!');
             }
             // Marked as walked
             this.walkedNodes.set(u.NODEID, 1);
@@ -77,23 +80,8 @@ class AStarShortestPath {
                 this.prevRoadMap.set(v.NODEID, neighborRoad);
             });
         };
-        console.log('✘ Could not find path...');
-        return [];
-    }
-
-    traceRoute(source, dest) {
-        console.log(`Examined ${this.walkedNodes.size} nodes`);
-        const tracert = [this.prevRoadMap.get(dest).vertices];
-        let current = dest;
-        while (true) {
-            current = this.prevNodeMap.get(current)
-            const { vertices } = this.prevRoadMap.get(current) || {};
-            if (!vertices) break;
-            tracert.unshift(vertices);
-        }
-        console.log('Route length: ', tracert.length);
-        return [].concat.apply([], tracert);
+        return console.log('✘ Could not find path...');
     }
 }
 
-module.exports = AStarShortestPath;
+module.exports = AStar;

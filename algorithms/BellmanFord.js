@@ -1,5 +1,8 @@
-class BellmanFordShortestPath {
+const ShortestPath = require('./ShortestPath');
+
+class BellmanFord extends ShortestPath {
     constructor(graph) {
+        super();
         this.graph = graph;
         this.activeNodes = new Map(); // NODEID => 1
         this.walkedNodes = new Map(); // NODEID => 1
@@ -14,6 +17,8 @@ class BellmanFordShortestPath {
     }
 
     run(source, dest) { // NODEID
+        this.source = source;
+        this.dest = dest;
         this.distMap.set(source, 0); // Initialize distance with 0
         this.activeNodes.set(source, 1); // Set as active
 
@@ -42,27 +47,11 @@ class BellmanFordShortestPath {
 
         // Detect destination
         if (this.prevNodeMap.get(dest)) {
-            console.log('√ Reached destination!');
-            return this.traceRoute(source, dest);
+            return console.log('√ Reached destination!');
         }
 
-        console.log('✘ Could not find path...');
-        return [];
-    }
-
-    traceRoute(source, dest) {
-        console.log(`Examined ${this.walkedNodes.size} nodes`);
-        const tracert = [this.prevRoadMap.get(dest).vertices];
-        let current = dest;
-        while (true) {
-            current = this.prevNodeMap.get(current)
-            const { vertices } = this.prevRoadMap.get(current) || {};
-            if (!vertices) break;
-            tracert.unshift(vertices);
-        }
-        console.log('Route length: ', tracert.length);
-        return [].concat.apply([], tracert);
+        return console.log('✘ Could not find path...');
     }
 }
 
-module.exports = BellmanFordShortestPath;
+module.exports = BellmanFord;

@@ -46,22 +46,28 @@ const storePolygon = async (graph) => {
 })();
 
 exports.runDijkstra = (source, dest) => {
-    return new Dijkstra(graph).run(
+    const sp = new Dijkstra(graph);
+    sp.run(
         getNearestNode(source, graph.nodeMap) || '48438271',
         getNearestNode(dest, graph.nodeMap) || '48432890'
     );
+    return sp;
 }
 
 exports.runAStar = (source, dest) => {
-    return new AStar(graph).run(
+    const sp = new AStar(graph);
+    sp.run(
         getNearestNode(source, graph.nodeMap) || '48438271',
         getNearestNode(dest, graph.nodeMap) || '48432890'
     );
+    return sp;
 }
 
 exports.runBestFirstSearch = (source, dest) => {
-    return new BestFirstSearch(graph).run(
+    const sp = new BestFirstSearch(graph);
+    sp.run(
         getNearestNode(source, graph.nodeMap) || '48438271',
         getNearestNode(dest, graph.nodeMap) || '48432890'
     );
+    return sp;
 }
