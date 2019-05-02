@@ -19,8 +19,8 @@ io.on('connection', async (socket) => {
     socket.removeAllListeners();
     // Handle connection
     console.log('New connection');
-    // socket.emit('roadLoad', await readJSON('./resources/sfo_roads.json'));
-    // socket.emit('obstacleLoad', await readJSON('./resources/sfo_poly.json'));
+    // Send obstacle geojson
+    socket.emit('obstacles', await readJSON('./resources/sfo_poly.json'));
     // Handle disconnect
     socket.on('disconnect', () => console.log('Disconnected'));
     // Handle shortest path command
@@ -36,17 +36,6 @@ const socketHandler = socket => {
     const sp = algorithmController.runAStar(source, dest);
     socket.emit('AStarRoute', sp.traceRoute());
     socket.emit('AStarTraversed', sp.getTraversed());
-    // Benchmark
-    const suite = new Benchmark.Suite();
-    suite
-      .add('AStar', () => {
-        algorithmController.runAStar(source, dest);
-      })
-      .on('cycle', event => {
-        console.log(String(event.target));
-        socket.emit('AStar_benchmark', 1 / event.target.hz);
-      })
-      .run({ async: true });
   });
 
   socket.on('runDijkstra', ({ source, dest }) => {
@@ -54,17 +43,6 @@ const socketHandler = socket => {
     const sp = algorithmController.runDijkstra(source, dest);
     socket.emit('DijkstraRoute', sp.traceRoute());
     socket.emit('DijkstraTraversed', sp.getTraversed());
-    // Benchmark
-    const suite = new Benchmark.Suite();
-    suite
-      .add('Dijkstra', () => {
-        algorithmController.runDijkstra(source, dest);
-      })
-      .on('cycle', event => {
-        console.log(String(event.target));
-        socket.emit('Dijkstra_benchmark', 1 / event.target.hz);
-      })
-      .run({ async: true });
   });
 
   socket.on('runBestFS', ({ source, dest }) => {
@@ -72,14 +50,34 @@ const socketHandler = socket => {
     const sp = algorithmController.runBestFirstSearch(source, dest);
     socket.emit('BestFSRoute', sp.traceRoute());
     socket.emit('BestFSTraversed', sp.getTraversed());
+  });
+
+  socket.on('runBenchmark', ({ source, dest }) => {
+    // Benchmark
     const suite = new Benchmark.Suite();
     suite
-      .add('BestFS', () => {
-        algorithmController.runBestFirstSearch(source, dest);
+      .add('AStar', function() {
+        const sp = algorithmController.runAStar(source, dest);
+        this.evaluation = sp.getEvaluation();
       })
-      .on('cycle', event => {
-        console.log(String(event.target));
-        socket.emit('BestFS_benchmark', 1 / event.target.hz);
+      .add('Dijkstra', function() {
+        const sp = algorithmController.runDijkstra(source, dest);
+        this.evaluation = sp.getEvaluation();
+      })
+      .add('BestFirstSearch', function() {
+        const sp = algorithmController.runBestFirstSearch(source, dest);
+        this.evaluation = sp.getEvaluation();
+      })
+      .on('cycle', function({ target }) {
+        console.log(String(target));
+        socket.emit('benchmark', {
+          name: target.name,
+          runTime: 1 / Number(target.hz),
+          ...target.evaluation,
+        });
+      })
+      .on('complete', function(event) {
+        console.log('Fastest is ' + this.filter('fastest').map('name'));
       })
       .run({ async: true });
   });

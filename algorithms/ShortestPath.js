@@ -12,7 +12,14 @@ class ShortestPath {
             tracert.unshift(vertices);
         }
         console.log('Route length: ', tracert.length);
-        return [].concat.apply([], tracert);
+        // return [].concat.apply([], tracert);
+        return {
+            type: 'Feature',
+            geometry: {
+                type: 'LineString',
+                coordinates: [].concat.apply([], tracert),
+            },
+        }
     }
 
     getTraversed() {
@@ -36,6 +43,29 @@ class ShortestPath {
             type: 'FeatureCollection',
             name: 'traversed_points',
             features,
+        }
+    }
+
+    getEvaluation() {
+        const lastRoad = this.prevRoadMap.get(this.dest)
+        // If no path
+        if (!lastRoad) return null;
+
+        let tracertDist = lastRoad.LENGTH;
+        let tracertCost = lastRoad.COST;
+
+        let current = this.dest;
+        while (true) {
+            current = this.prevNodeMap.get(current);
+            const prevRoad = this.prevRoadMap.get(current);
+            if (!prevRoad) break;
+            tracertDist += prevRoad.LENGTH;
+            tracertCost += prevRoad.COST;
+        }
+        return {
+            distance: tracertDist,
+            cost: tracertCost,
+            traversed: this.walkedNodes.size,
         }
     }
 }
