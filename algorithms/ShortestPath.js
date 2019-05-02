@@ -1,7 +1,7 @@
 class ShortestPath {
     traceRoute() {
         console.log(`Examined ${this.walkedNodes.size} nodes`);
-        if (!this.prevRoadMap.get(this.dest)) return [];
+        if (!this.prevRoadMap.get(this.dest)) return {};
 
         const tracert = [this.prevRoadMap.get(this.dest).vertices];
         let current = this.dest;
@@ -12,7 +12,6 @@ class ShortestPath {
             tracert.unshift(vertices);
         }
         console.log('Route length: ', tracert.length);
-        // return [].concat.apply([], tracert);
         return {
             type: 'Feature',
             geometry: {
