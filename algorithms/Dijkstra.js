@@ -21,7 +21,7 @@ class Dijkstra extends ShortestPath {
         return neighborRoad.COST || Number.POSITIVE_INFINITY;
     }
 
-    run(source, dest) { // NODEID
+    run(source, dest, constraint = true) { // NODEID
         this.source = source;
         this.dest = dest;
         this.distMap.set(source, 0); // Initialize distance with 0
@@ -44,9 +44,9 @@ class Dijkstra extends ShortestPath {
             neighborRoads.forEach(neighborRoad => { // Road obj
                 const v = this.graph.getNode(neighborRoad.ENDID); // Node obj
                  // Prevent duplicate set active
-                if (this.walkedNodes.get(v.NODEID) || this.graph.isBlocked(v.NODEID)) {
-                    return;
-                }
+                if (this.walkedNodes.get(v.NODEID)) return;
+                // Detect obstacles
+                if (constraint && this.graph.isBlocked(v.NODEID)) return;
                 // Calculate new distance
                 const alt = this.getDist(u.NODEID) + this.getLength(u.NODEID, v.NODEID);  
                 // If this node hasn't been evaluated before => update distance  

@@ -1,15 +1,18 @@
 class ShortestPath {
     traceRoute() {
         console.log(`Examined ${this.walkedNodes.size} nodes`);
-        if (!this.prevRoadMap.get(this.dest)) return {};
+        const lastRoad = this.prevRoadMap.get(this.dest);
+        let tracert = [];
 
-        const tracert = [this.prevRoadMap.get(this.dest).vertices];
-        let current = this.dest;
-        while (true) {
-            current = this.prevNodeMap.get(current);
-            const { vertices } = this.prevRoadMap.get(current) || {};
-            if (!vertices) break;
-            tracert.unshift(vertices);
+        if (lastRoad) {
+            tracert.unshift(lastRoad.vertices);
+            let current = this.dest;
+            while (true) {
+                current = this.prevNodeMap.get(current);
+                const { vertices } = this.prevRoadMap.get(current) || {};
+                if (!vertices) break;
+                tracert.unshift(vertices);
+            }
         }
         console.log('Route length: ', tracert.length);
         return {
@@ -52,6 +55,7 @@ class ShortestPath {
 
         let tracertDist = lastRoad.LENGTH;
         let tracertCost = lastRoad.COST;
+        let tracertLength = 1;
 
         let current = this.dest;
         while (true) {
@@ -60,11 +64,13 @@ class ShortestPath {
             if (!prevRoad) break;
             tracertDist += prevRoad.LENGTH;
             tracertCost += prevRoad.COST;
+            tracertLength += 1;
         }
         return {
             distance: tracertDist,
             cost: tracertCost,
             traversed: this.walkedNodes.size,
+            roadsNum: tracertLength,
         }
     }
 }

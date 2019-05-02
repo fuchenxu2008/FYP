@@ -31,41 +31,41 @@ io.on('connection', async (socket) => {
 });
 
 const socketHandler = socket => {
-  socket.on('runAStar', ({ source, dest }) => {
+  socket.on('runAStar', ({ source, dest, constraint }) => {
     console.log('Running A Star');
-    const sp = algorithmController.runAStar(source, dest);
+    const sp = algorithmController.runAStar(source, dest, constraint);
     socket.emit('AStarRoute', sp.traceRoute());
     socket.emit('AStarTraversed', sp.getTraversed());
   });
 
-  socket.on('runDijkstra', ({ source, dest }) => {
+  socket.on('runDijkstra', ({ source, dest, constraint }) => {
     console.log('Running Dijkstra');
-    const sp = algorithmController.runDijkstra(source, dest);
+    const sp = algorithmController.runDijkstra(source, dest, constraint);
     socket.emit('DijkstraRoute', sp.traceRoute());
     socket.emit('DijkstraTraversed', sp.getTraversed());
   });
 
-  socket.on('runBestFS', ({ source, dest }) => {
+  socket.on('runBestFS', ({ source, dest, constraint }) => {
     console.log('Running Best First Search');
-    const sp = algorithmController.runBestFirstSearch(source, dest);
+    const sp = algorithmController.runBestFirstSearch(source, dest, constraint);
     socket.emit('BestFSRoute', sp.traceRoute());
     socket.emit('BestFSTraversed', sp.getTraversed());
   });
 
-  socket.on('runBenchmark', ({ source, dest }) => {
+  socket.on('runBenchmark', ({ source, dest, constraint }) => {
     // Benchmark
     const suite = new Benchmark.Suite();
     suite
       .add('AStar', function() {
-        const sp = algorithmController.runAStar(source, dest);
+        const sp = algorithmController.runAStar(source, dest, constraint);
         this.evaluation = sp.getEvaluation();
       })
       .add('Dijkstra', function() {
-        const sp = algorithmController.runDijkstra(source, dest);
+        const sp = algorithmController.runDijkstra(source, dest, constraint);
         this.evaluation = sp.getEvaluation();
       })
       .add('BestFirstSearch', function() {
-        const sp = algorithmController.runBestFirstSearch(source, dest);
+        const sp = algorithmController.runBestFirstSearch(source, dest, constraint);
         this.evaluation = sp.getEvaluation();
       })
       .on('cycle', function({ target }) {
