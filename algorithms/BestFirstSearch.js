@@ -20,12 +20,16 @@ class BestFirstSearch extends ShortestPath {
     heuristicCost(start, goal) {
         const startNode = this.graph.getNode(start);
         const goalNode = this.graph.getNode(goal);
-        return calDistance(startNode.vertex, goalNode.vertex) / this.graph.avergeSpeed;
+        return calDistance(
+            startNode.vertex,
+            goalNode.vertex
+        ) / (this.hMode === 'time' ? this.graph.avergeSpeed : 1);
     }
 
-    run(source, dest, constraint = true) { // NODEID
+    run(source, dest, constraint = true, hMode = 'time') { // NODEID
         this.source = source;
         this.dest = dest;
+        this.hMode = hMode;
         this.hScoreMap.set(source, this.heuristicCost(source, dest)); // Initialize hScore with heuristic cost
         this.activeNodes.set(source, 1); // Set as active
         // To use

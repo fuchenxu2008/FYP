@@ -45,7 +45,7 @@ const storePolygon = async (graph) => {
     console.log('√ Data structure established');
 })();
 
-exports.runDijkstra = (source, dest, constraint) => {
+exports.runDijkstra = ({ source, dest, constraint }) => {
     const sp = new Dijkstra(graph);
     sp.run(
         getNearestNode(source, graph.nodeMap) || '48438271',
@@ -55,22 +55,24 @@ exports.runDijkstra = (source, dest, constraint) => {
     return sp;
 }
 
-exports.runAStar = (source, dest, constraint) => {
+exports.runAStar = ({ source, dest, constraint, hMode }) => {
     const sp = new AStar(graph);
     sp.run(
         getNearestNode(source, graph.nodeMap) || '48438271',
         getNearestNode(dest, graph.nodeMap) || '48432890',
         constraint,
+        hMode
     );
     return sp;
 }
 
-exports.runBestFirstSearch = (source, dest, constraint) => {
+exports.runBestFirstSearch = ({ source, dest, constraint, hMode }) => {
     const sp = new BestFirstSearch(graph);
     sp.run(
         getNearestNode(source, graph.nodeMap) || '48438271',
         getNearestNode(dest, graph.nodeMap) || '48432890',
         constraint,
+        hMode
     );
     return sp;
 }

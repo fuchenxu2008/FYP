@@ -26,7 +26,7 @@ class BellmanFord extends ShortestPath {
             Array.from(this.graph.roadMap.values()).forEach((road, j) => {
                 const u = road.STARTID;
                 const v = road.ENDID;
-                const alt = this.getDist(u) + road.COST;
+                const alt = this.getDist(u) + road.TIME;
                 if (this.getDist(u) !== Infinity && alt < this.getDist(v)) {
                     this.distMap.set(v, alt);
                     this.prevNodeMap.set(v, u);
@@ -39,7 +39,7 @@ class BellmanFord extends ShortestPath {
         Array.from(this.graph.roadMap.values()).forEach((road) => {
             const u = road.STARTID;
             const v = road.ENDID;
-            const alt = this.getDist(u) + road.COST;
+            const alt = this.getDist(u) + road.TIME;
             if (this.getDist(u) !== Infinity && alt < this.getDist(v)) {
                 return console.log('✘ Road network contains negative weight cycle!');
             }

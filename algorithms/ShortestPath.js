@@ -54,7 +54,7 @@ class ShortestPath {
         if (!lastRoad) return null;
 
         let tracertDist = lastRoad.LENGTH;
-        let tracertCost = lastRoad.COST;
+        let tracertTime = lastRoad.TIME;
         let tracertLength = 1;
 
         let current = this.dest;
@@ -63,12 +63,12 @@ class ShortestPath {
             const prevRoad = this.prevRoadMap.get(current);
             if (!prevRoad) break;
             tracertDist += prevRoad.LENGTH;
-            tracertCost += prevRoad.COST;
+            tracertTime += prevRoad.TIME;
             tracertLength += 1;
         }
         return {
             distance: tracertDist,
-            cost: tracertCost,
+            time: tracertTime,
             traversed: this.walkedNodes.size,
             roadsNum: tracertLength,
         }

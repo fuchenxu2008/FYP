@@ -25,18 +25,22 @@ class AStar extends ShortestPath {
 
     getLength(startID, endID) {
         const neighborRoad = this.graph.getNeighborRoads(startID).find(nr => nr.ENDID === endID) || {};
-        return neighborRoad.COST || Number.POSITIVE_INFINITY;
+        return neighborRoad.TIME || Number.POSITIVE_INFINITY;
     }
 
     heuristicCost(start, goal) {
         const startNode = this.graph.getNode(start);
         const goalNode = this.graph.getNode(goal);
-        return calDistance(startNode.vertex, goalNode.vertex) / this.graph.avergeSpeed;
+        return calDistance(
+            startNode.vertex,
+            goalNode.vertex
+        ) / (this.hMode === 'time' ? this.graph.avergeSpeed : 1);
     }
 
-    run(source, dest, constraint = true) { // NODEID
+    run(source, dest, constraint = true, hMode = 'time') { // NODEID
         this.source = source;
         this.dest = dest;
+        this.hMode = hMode;
         this.gScoreMap.set(source, 0); // Initialize gScore with 0
         this.fScoreMap.set(source, 0 + this.heuristicCost(source, dest)); // Initialize fScore with 0 + heuristic cost
         this.activeNodes.set(source, 1); // Set as active

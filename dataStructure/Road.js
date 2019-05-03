@@ -5,7 +5,7 @@ class Road {
         this.ENDID = ENDID.toString();
         this.LENGTH = LENGTH; // [m]
         this.SPD = SPD; // [m/s]
-        this.COST = LENGTH / SPD;
+        this.TIME = LENGTH / SPD;
         this.vertices = coordinates;
     }
 }

@@ -18,7 +18,7 @@ class Dijkstra extends ShortestPath {
 
     getLength(startID, endID) {
         const neighborRoad = this.graph.getNeighborRoads(startID).find(nr => nr.ENDID === endID) || {};
-        return neighborRoad.COST || Number.POSITIVE_INFINITY;
+        return neighborRoad.TIME || Number.POSITIVE_INFINITY;
     }
 
     run(source, dest, constraint = true) { // NODEID
