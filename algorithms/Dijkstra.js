@@ -32,13 +32,13 @@ class Dijkstra extends ShortestPath {
                 Array.from(this.activeNodes.keys())
                     .reduce((a, b) => this.getDist(a) < this.getDist(b) ? a : b)
             );
+            // Marked as walked
+            this.walkedNodes.set(u.NODEID, 1);
+            this.activeNodes.delete(u.NODEID);
             // Detect destination
             if (u.NODEID === dest) {
                 return console.log('√ Reached destination!');
             }
-            // Marked as walked
-            this.walkedNodes.set(u.NODEID, 1);
-            this.activeNodes.delete(u.NODEID);
             // Examine neighbors
             const neighborRoads = this.graph.getNeighborRoads(u.NODEID);
             neighborRoads.forEach(neighborRoad => { // Road obj

@@ -6,6 +6,10 @@ class Graph {
         this.nodeMap = new Map(); // NODEID => Node
         this.obstacleMap = new Map(); // POLYID => Polygon
         this.neighborMap = new Map(); // NODEID => [EDGEID]
+        // Calculating a weighted averge speed for heuristic function
+        this.allRoadLength = 0;
+        this.speedWeight = 0;
+        this.avergeSpeed = 1;
     }
 
     addObstacle(newPolygon) {
@@ -19,6 +23,9 @@ class Graph {
     addRoad(newRoad) {
         this.roadMap.set(newRoad.EDGEID, newRoad);
         this.linkRoads(newRoad);
+        this.allRoadLength += newRoad.LENGTH;
+        this.speedWeight += newRoad.LENGTH * newRoad.SPD;
+        this.avergeSpeed = this.speedWeight / this.allRoadLength;
     }
 
     linkRoads(road) {

@@ -31,10 +31,7 @@ class AStar extends ShortestPath {
     heuristicCost(start, goal) {
         const startNode = this.graph.getNode(start);
         const goalNode = this.graph.getNode(goal);
-        return calDistance(
-            [startNode.vertex[0], startNode.vertex[1]],
-            [goalNode.vertex[0], goalNode.vertex[1]]
-        );
+        return calDistance(startNode.vertex, goalNode.vertex) / this.graph.avergeSpeed;
     }
 
     run(source, dest, constraint = true) { // NODEID
@@ -49,13 +46,13 @@ class AStar extends ShortestPath {
                 Array.from(this.activeNodes.keys())
                     .reduce((a, b) => this.fScoreMap.get(a) < this.fScoreMap.get(b) ? a : b)
             );
+            // Marked as walked
+            this.walkedNodes.set(u.NODEID, 1);
+            this.activeNodes.delete(u.NODEID);
             // Detect destination
             if (u.NODEID === dest) {
                 return console.log('√ Reached destination!');
             }
-            // Marked as walked
-            this.walkedNodes.set(u.NODEID, 1);
-            this.activeNodes.delete(u.NODEID);
             // Examine neighbors
             const neighborRoads = this.graph.getNeighborRoads(u.NODEID);
             neighborRoads.forEach(neighborRoad => { // Road obj
