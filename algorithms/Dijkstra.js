@@ -1,5 +1,5 @@
-const PriorityQueue = require('../dataStructure/PriorityQueue');
 const ShortestPath = require('./ShortestPath');
+const PriorityQueue = require('../dataStructure/PriorityQueue');
 
 class Dijkstra extends ShortestPath {
     constructor(graph) {
@@ -29,7 +29,7 @@ class Dijkstra extends ShortestPath {
         this.activeQueue.enqueue(source, this.getDist(source));
         // To use
         while (this.activeQueue.length()) {
-            const u = this.graph.getNode(this.activeQueue.dequeue().element)
+            const u = this.graph.getNode(this.activeQueue.dequeue().element);
             // Marked as walked
             this.walkedNodes.set(u.NODEID, 1);
             // Detect destination

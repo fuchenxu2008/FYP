@@ -1,11 +1,12 @@
 const ShortestPath = require('./ShortestPath');
+const PriorityQueue = require('../dataStructure/PriorityQueue');
 const { calDistance } = require('../utils/geometry');
 
 class BestFirstSearch extends ShortestPath {
     constructor(graph) {
         super();
         this.graph = graph;
-        this.activeNodes = new Map(); // NODEID => 1
+        this.activeQueue = new PriorityQueue(); // activeNode ID with its dist as priority
         this.walkedNodes = new Map(); // NODEID => 1
         this.hScoreMap = new Map(); // NODEID => fScore = gScore + heuristic
         this.prevNodeMap = new Map(); // NODEID => NODEID
@@ -31,16 +32,12 @@ class BestFirstSearch extends ShortestPath {
         this.dest = dest;
         this.hMode = hMode;
         this.hScoreMap.set(source, this.heuristicCost(source, dest)); // Initialize hScore with heuristic cost
-        this.activeNodes.set(source, 1); // Set as active
+        this.activeQueue.enqueue(source, this.hScore(source));
         // To use
-        while (this.activeNodes.size) {
-            const u = this.graph.getNode(
-                Array.from(this.activeNodes.keys())
-                    .reduce((a, b) => this.hScoreMap.get(a) < this.hScoreMap.get(b) ? a : b)
-            );
+        while (this.activeQueue.length()) {
+            const u = this.graph.getNode(this.activeQueue.dequeue().element);
             // Marked as walked
             this.walkedNodes.set(u.NODEID, 1);
-            this.activeNodes.delete(u.NODEID);
             // Detect destination
             if (u.NODEID === dest) {
                 return console.log('√ Reached destination!');
@@ -57,8 +54,8 @@ class BestFirstSearch extends ShortestPath {
                 const alt = this.heuristicCost(v.NODEID, dest);
                 // If this node hasn't been evaluated before => update distance  
                 // else only update if has a smaller distance
-                if (!this.activeNodes.get(v.NODEID)) {
-                    this.activeNodes.set(v.NODEID, 1);
+                if (!this.activeQueue.contains(v.NODEID)) {
+                    this.activeQueue.enqueue(v.NODEID, alt);
                 } else if (alt >= this.hScore(u.NODEID)) {
                     return;
                 }
