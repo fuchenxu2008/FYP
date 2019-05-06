@@ -1,10 +1,11 @@
+const PriorityQueue = require('../dataStructure/PriorityQueue');
 const ShortestPath = require('./ShortestPath');
 
 class Dijkstra extends ShortestPath {
     constructor(graph) {
         super();
         this.graph = graph;
-        this.activeNodes = new Map(); // NODEID => 1
+        this.activeQueue = new PriorityQueue(); // activeNode ID with its dist as priority
         this.walkedNodes = new Map(); // NODEID => 1
         this.distMap = new Map(); // NODEID => distance
         this.prevNodeMap = new Map(); // NODEID => NODEID
@@ -25,16 +26,12 @@ class Dijkstra extends ShortestPath {
         this.source = source;
         this.dest = dest;
         this.distMap.set(source, 0); // Initialize distance with 0
-        this.activeNodes.set(source, 1); // Set as active
+        this.activeQueue.enqueue(source, this.getDist(source));
         // To use
-        while (this.activeNodes.size) {
-            const u = this.graph.getNode(
-                Array.from(this.activeNodes.keys())
-                    .reduce((a, b) => this.getDist(a) < this.getDist(b) ? a : b)
-            );
+        while (this.activeQueue.length()) {
+            const u = this.graph.getNode(this.activeQueue.dequeue().element)
             // Marked as walked
             this.walkedNodes.set(u.NODEID, 1);
-            this.activeNodes.delete(u.NODEID);
             // Detect destination
             if (u.NODEID === dest) {
                 return console.log('√ Reached destination!');
@@ -51,8 +48,8 @@ class Dijkstra extends ShortestPath {
                 const alt = this.getDist(u.NODEID) + this.getLength(u.NODEID, v.NODEID);  
                 // If this node hasn't been evaluated before => update distance  
                 // else only update if has a smaller distance   
-                if (!this.activeNodes.get(v.NODEID)) {
-                    this.activeNodes.set(v.NODEID, 1);
+                if (!this.activeQueue.contains(v.NODEID)) {
+                    this.activeQueue.enqueue(v.NODEID, this.getDist(v.NODEID));
                 } else if (alt >= this.getDist(v.NODEID)) {
                     return;
                 }
