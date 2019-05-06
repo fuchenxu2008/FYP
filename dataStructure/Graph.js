@@ -36,18 +36,6 @@ class Graph {
         );
     }
 
-    getOneRoad() {
-        const roads = Array.from(this.roadMap.keys());
-        const randomId = roads[Math.floor(Math.random() * 1000)];
-        return this.roadMap.get(randomId);
-    }
-
-    getOneNode() {
-        const nodes = Array.from(this.nodeMap.keys());
-        const randomId = nodes[Math.floor(Math.random() * 1000)];
-        return this.nodeMap.get(randomId);
-    }
-
     getRoad(EDGEID) {
         return this.roadMap.get(EDGEID);
     }

@@ -67,7 +67,7 @@ exports.getNearestNode = (point, nodeMap) => {
     const iMax = allNodes.length;
     for (; i < iMax; i++) {
         const node = allNodes[i];
-        const newDist = this.calDistance([point[0], point[1]], [node.vertex[0], node.vertex[1]]);
+        const newDist = this.calDistance(point, node.vertex);
         if (newDist < nearest.distance) {
             nearest.NODEID = node.NODEID;
             nearest.distance = newDist;
